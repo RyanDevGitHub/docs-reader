@@ -55,6 +55,7 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd ~/apps/docs-reader
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
             # Pull la dernière image PHP-FPM depuis GHCR
             docker-compose pull php_fpm
             # Recrée le conteneur PHP-FPM avec le fichier env déjà présent
