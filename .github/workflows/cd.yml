@@ -54,7 +54,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            cd /var/www/apps/docs-reader
+            cd ~/apps/docs-reader
             # Pull la dernière image PHP-FPM depuis GHCR
             docker-compose pull php_fpm
             # Recrée le conteneur PHP-FPM avec le fichier env déjà présent
