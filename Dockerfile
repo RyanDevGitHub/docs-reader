@@ -17,13 +17,6 @@ RUN echo "<Directory /var/www/html/public>\n\
 RUN apt-get update && apt-get install -y unzip zip git libicu-dev libonig-dev libxml2-dev libzip-dev libpq-dev curl gnupg \
     && docker-php-ext-install intl pdo pdo_mysql pdo_pgsql opcache zip
 
-# Installer Node.js 18
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs
-
-# Activer Yarn via Corepack
-RUN corepack enable && corepack prepare yarn@stable --activate
-
 # Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -34,14 +27,8 @@ WORKDIR /var/www/html
 # Copier tout le projet
 COPY . .
 
-# Installer dépendances PHP
+# Installer dépendances PHP avec Composer
 RUN composer install --no-interaction --prefer-dist --no-scripts
-
-# Installer dépendances JS
-RUN yarn install
-
-# Builder les assets
-RUN yarn encore production
 
 # Droits pour Symfony
 RUN mkdir -p var && chown -R www-data:www-data var
