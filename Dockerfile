@@ -1,38 +1,50 @@
-# Utiliser une image PHP FPM légère
-FROM php:8.2-fpm-alpine
+# Base PHP avec Apache
+FROM php:8.2-apache
 
-# Étape 1 : Installer les dépendances système et extensions PHP
-RUN apk update && apk add --no-cache \
-    git \
-    bash \
-    icu-dev \
-    libzip-dev \
-    oniguruma-dev \
-    postgresql-dev \
-    zip \
-    unzip \
-    && docker-php-ext-install \
-       pdo \
-       pdo_pgsql \
-       intl \
-       zip \
-       bcmath \
-       opcache
+# Activer mod_rewrite pour .htaccess
+RUN a2enmod rewrite
 
-# Étape 2 : Définir le répertoire de travail
+# Modifier la racine vers /var/www/html/public
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+
+# Ajouter bloc Directory pour autoriser .htaccess
+RUN echo "<Directory /var/www/html/public>\n\
+    AllowOverride All\n\
+    Require all granted\n\
+    </Directory>" >> /etc/apache2/apache2.conf
+
+# Installer extensions PHP nécessaires
+RUN apt-get update && apt-get install -y unzip zip git libicu-dev libonig-dev libxml2-dev libzip-dev libpq-dev curl gnupg \
+    && docker-php-ext-install intl pdo pdo_mysql pdo_pgsql opcache zip
+
+# Installer Node.js 18
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
+
+# Activer Yarn via Corepack
+RUN corepack enable && corepack prepare yarn@stable --activate
+
+# Installer Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# Définir le dossier de travail
 WORKDIR /var/www/html
 
-# Étape 3 : Copier le code de l'application
+# Copier tout le projet
 COPY . .
 
-# Étape 4 : Installer Composer
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+# Installer dépendances PHP
+RUN composer install --no-interaction --prefer-dist --no-scripts
 
-# Étape 5 : Installer les dépendances PHP via Composer
-RUN composer install --optimize-autoloader
+# Installer dépendances JS
+RUN yarn install
 
-# Étape 6 : Changer les permissions pour FPM (www-data)
-RUN chown -R www-data:www-data var public
+# Builder les assets
+RUN yarn encore production
 
-# Étape 7 : Exposer le port FPM
-EXPOSE 9000
+# Droits pour Symfony
+RUN mkdir -p var && chown -R www-data:www-data var
+
+# Exposer le port HTTP
+EXPOSE 80
