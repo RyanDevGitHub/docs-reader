@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{#
+NOTE IMPORTANTE:
+Assurez-vous que les dépendances Tailwind CSS et Lucide Icons sont incluses
+dans votre fichier de base pour que le style s'affiche correctement.
+Les classes 'body-bg', 'card-bg', 'primary', etc., nécessitent la configuration Tailwind.
+#}
+
+{% block title %}Suivi des Documents | Admin{% endblock %}
+
+{% block body %}
+<div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+<!-- En-tête de la page -->
+<header class="mb-8 flex items-center justify-between">
+<h1 class="text-4xl font-extrabold text-white tracking-tight flex items-center">
+<i data-lucide="bar-chart-3" class="w-8 h-8 mr-3 text-primary"></i>
+Suivi des Documents
+</h1>
+<p class="text-gray-400 mt-2 hidden sm:block">Gestion et analyse de la lecture des documents partagés.</p>
+</header>
+
+    <!-- Bouton d'action principal -->
+    <div class="mb-8 flex justify-end">
+       {# Idéalement, à envelopper d'une vérification d'accès: {% if is_granted('ROLE_ADMIN') %} #}
+        <a href="{{ path('app_document') }}" class="inline-flex items-center px-4 py-2 border border-gray-600 text-sm font-medium rounded-xl shadow-lg text-gray-300 bg-gray-700/50 hover:bg-gray-700 transition duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-body-bg justify-center">
+            <i data-lucide="bar-chart-3" class="w-4 h-4 mr-2"></i>
+            Catalogue des Documents
+        </a>
+        {# J'utilise 'admin_document_upload' comme dans le template original que vous avez fourni #}
+        <a href="{{ path('app_admin_document_new') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-lg text-white bg-primary hover:bg-primary-dark transition duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-body-bg">
+            <i data-lucide="upload-cloud" class="w-5 h-5 mr-2"></i>
+            Uploader un nouveau document 
+        </a>
+    </div>
+
+    <!-- Tableau de suivi des documents -->
+    <div class="bg-card-bg shadow-2xl overflow-hidden rounded-xl border border-gray-700/50">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-700">
+                <thead class="bg-gray-800/70">
+                    <tr>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Titre
+                        </th>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">
+                            Date d'Upload
+                        </th>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Progression de Lecture
+                        </th>
+                        <th scope="col" class="relative px-6 py-4">
+                            <span class="sr-only">Détails</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700">
+                    {# Boucle sur la collection de documents passée au template #}
+                    {% for document in documents %}
+                        {# Calcul des statistiques de lecture en Twig #}
+                        {% set totalDeliveries = document.deliveries|length %}
+                        {% set readCount = 0 %}
+                        {% for delivery in document.deliveries %}
+                            {% if delivery.readAt is not null %}
+                                {% set readCount = readCount + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {# Calcul du pourcentage et sélection de la couleur de progression #}
+                        {% set percentage = totalDeliveries > 0 ? (readCount / totalDeliveries) * 100 : 0 %}
+                        
+                        {% set progressColorClass = 'bg-gray-500' %}
+                        {% set textColorClass = 'text-gray-400' %}
+                        
+                        {% if percentage == 100 %}
+                            {% set progressColorClass = 'bg-green-500' %}
+                            {% set textColorClass = 'text-green-400' %}
+                        {% elseif percentage > 0 %}
+                            {% set progressColorClass = 'bg-yellow-500' %}
+                            {% set textColorClass = 'text-yellow-400' %}
+                        {% endif %}
+                        
+                        <tr class="bg-card-bg hover:bg-gray-700 transition duration-150 ease-in-out">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                                {{ document.title }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400 hidden sm:table-cell">
+                                {{ document.createdAt|date('Y-m-d H:i') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                                <!-- Barre de progression visuelle -->
+                                <div class="flex items-center space-x-3">
+                                    <span class="font-semibold text-white">{{ readCount }} / {{ totalDeliveries }}</span>
+                                    <div class="w-24 bg-gray-600 rounded-full h-2.5">
+                                        <div class="h-2.5 rounded-full {{ progressColorClass }}" style="width: {{ percentage|round(0) }}%"></div>
+                                    </div>
+                                    <span class="text-xs {{ textColorClass }}">
+                                        {{ percentage|round(0) }}%
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                {# Assurez-vous que le chemin 'admin_document_detail' existe et prend l'ID en paramètre #}
+                                <a href="{{ path('admin_document_detail', {'id': document.id}) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full text-primary bg-primary/10 hover:bg-primary/20 transition duration-150">
+                                    <i data-lucide="eye" class="w-4 h-4 mr-1"></i>
+                                    Voir Suivi
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="p-6 text-center text-gray-400">
+                                <i data-lucide="folder-x" class="w-8 h-8 mx-auto mb-2 text-gray-500"></i>
+                                <p>Aucun document n'a été uploadé pour le moment.</p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{# Nécessaire pour initialiser les icônes Lucide (même si chargé dans base, c'est une sécurité) #}
+<script>
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+</script>
+
+
+{% endblock %}

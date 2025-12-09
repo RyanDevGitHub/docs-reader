@@ -1,0 +1,9 @@
+twig:
+    file_name_pattern: '*.twig'
+    cache: '%kernel.cache_dir%/twig'
+    debug: true
+    strict_variables: false
+
+when@test:
+    twig:
+        strict_variables: true

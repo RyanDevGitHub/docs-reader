@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lecture : {{ document.title }}{% endblock %}
+
+{% block body %}
+    <style>
+        /* CSS spécifique pour garantir la hauteur de l'iframe, utilisant des unités relatives pour la réactivité */
+        .pdf-container {
+            height: 80vh; 
+            min-height: 500px; 
+        }
+        @media (max-width: 640px) {
+            .pdf-container {
+                height: 70vh; 
+            }
+        }
+    </style>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50 min-h-screen">
+        
+        <!-- En-tête du Document : Amélioré pour être plus engageant -->
+        <div class="bg-white shadow-lg rounded-xl p-6 mb-6 border-l-4 border-indigo-500">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-1">
+                {{ document.title }}
+            </h2>
+            <p class="text-lg text-gray-600">
+                Veuillez lire ce document pour valider votre lecture.
+            </p>
+        </div>
+
+        <!-- ZONE D'AFFICHAGE DU PDF (IFRAME) : Encadré et stylisé -->
+        <div class="pdf-container bg-white border border-gray-300 rounded-lg shadow-xl overflow-hidden mb-6">
+            <iframe 
+                src="{{ path('read_document_file', { token: token }) }}" 
+                class="w-full h-full"
+                style="border: none;"
+                title="Document PDF">
+            </iframe>
+        </div>
+
+        <!-- BOUTON J'AI LU ou Message de Confirmation -->
+        {% if not delivery.readAt %}
+            <form action="{{ path('confirm_read', { token: token }) }}" method="post">
+                <button type="submit" class="w-full inline-flex items-center justify-center px-6 py-4 border border-transparent text-xl font-bold rounded-xl shadow-2xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out transform hover:scale-[1.005] hover:shadow-3xl">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    J’ai lu ce document et je confirme
+                </button>
+            </form>
+        {% else %}
+            <!-- Message de confirmation de lecture -->
+            <div class="w-full p-4 bg-green-100 border border-green-300 text-green-800 rounded-xl text-center font-semibold shadow-lg">
+                <svg class="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Ce document est déjà marqué comme lu, le <strong>{{ delivery.readAt|date('Y-m-d H:i') }}</strong>.
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {# AUCUN SCRIPT ICI POUR L'IFRAME #}
+{% endblock %}

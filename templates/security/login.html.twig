@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion | Collaborateur{% endblock %}
+
+{% block body %}
+{#
+Le container 'login-container' est centré grâce aux classes min-h-screen, flex, items-center et justify-center.
+Il utilise le thème sombre configuré dans base.html.twig (bg-body-bg).
+#}
+<div class="min-h-screen flex items-center justify-center p-4">
+<!-- Carte de Connexion -->
+<div class="w-full max-w-md bg-card-bg shadow-2xl rounded-2xl p-8 border border-gray-700/50">
+
+        <div class="text-center mb-8">
+            <i data-lucide="shield-check" class="w-10 h-10 mx-auto text-primary mb-3"></i>
+            <h2 class="text-3xl font-extrabold text-white">Connexion Collaborateur</h2>
+            <p class="text-gray-400 text-sm mt-1">Accédez à votre espace sécurisé.</p>
+        </div>
+
+        <!-- Affichage de l'erreur Symfony/Sécurité -->
+        {% if error %}
+            <div class="bg-red-900/40 text-red-300 p-3 rounded-xl mb-6 text-sm flex items-center" role="alert">
+                <i data-lucide="alert-triangle" class="w-5 h-5 mr-2 flex-shrink-0"></i>
+                Erreur de connexion : identifiants invalides.
+            </div>
+        {% endif %}
+
+        <form method="post" action="{{ path('app_login') }}">
+            <div class="space-y-6">
+                <!-- Champ Email -->
+                <div>
+                    <label for="inputEmail" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" required autofocus 
+                           class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition duration-150"
+                           placeholder="votre.email@domaine.com">
+                </div>
+                
+                <!-- Champ Mot de passe -->
+                <div>
+                    <label for="inputPassword" class="block text-sm font-medium text-gray-300 mb-1">Mot de passe</label>
+                    <input type="password" name="password" id="inputPassword" required
+                           class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition duration-150"
+                           placeholder="********">
+                </div>
+            </div>
+
+            <!-- Jeton de sécurité CSRF : indispensable pour Symfony Security -->
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <!-- Bouton de Connexion -->
+            <button type="submit" 
+                    class="w-full mt-8 py-3 px-4 bg-primary text-white font-semibold rounded-xl shadow-lg shadow-primary/30 hover:bg-primary-dark transition duration-200 transform hover:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-card-bg flex items-center justify-center">
+                <i data-lucide="log-in" class="w-5 h-5 mr-2"></i>
+                Connexion
+            </button>
+        </form>
+        
+        <div class="mt-6 text-center text-sm">
+            {# Lien simulé pour la récupération du mot de passe #}
+            <a href="#" class="text-primary hover:text-primary-dark transition duration-150">Mot de passe oublié?</a>
+        </div>
+        
+    </div>
+</div>
+
+{# 
+    Ce script est nécessaire si Lucide n'est pas chargé de manière globale dans base.html.twig après le DOM.
+    Si vous l'avez déplacé dans votre bloc 'javascripts' de base.html.twig, vous pouvez le retirer d'ici.
+#}
+<script>
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+</script>
+
+
+{% endblock %}

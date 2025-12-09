@@ -1,0 +1,52 @@
+# config/packages/security.yaml
+
+security:
+    # 1. Définir les utilisateurs directement en mémoire (méthode MVP la plus simple)
+    providers:
+        app_user_provider:
+            memory:
+                users:
+                    # Collaborateur 1 (Email / Mot de passe)
+                    azni.kousseila7@gmail.com:
+                        password: juicytokoussyto75
+                        roles: ['ROLE_USER']
+                    # Collaborateur 2
+                    yanis.bekhti5@gmail.com:
+                        password: juicytokoussyto75
+                        roles: ['ROLE_USER']
+                    # Collaborateur 3
+                    ryanhaddadpro@gmail.com:
+                        password: eVVQYEsYL7mMNXjb
+                        roles: ['ROLE_USER']
+    
+    # 2. Définir le mécanisme de hashage (obligatoire pour "in-memory" sans BDD)
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+            algorithm: plaintext # Ceci indique à Symfony que les mots de passe sont en clair.
+
+    # 3. Le Firewall et la Gestion de Session
+    firewalls:
+        main:
+            lazy: true
+            provider: app_user_provider
+            
+            # Méthode de Connexion
+            form_login:
+                login_path: app_login            # L'URL où est affiché le formulaire
+                check_path: app_login            # L'URL où le formulaire est soumis et vérifié
+                default_target_path: admin_document_index # Page après connexion réussie
+                enable_csrf: true
+
+                username_parameter: email   # <-- Indique au firewall que l'identifiant est dans le champ 'email'
+                password_parameter: password # <-- Indique au firewall que le mot de passe est dans le champ 'password' 
+                
+            # Déconnexion
+            logout:
+                path: app_logout
+                target: app_login
+
+    # 4. Contrôle d'accès : Protéger la page de documents
+    access_control:
+        # - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY } # Autoriser tout le monde à voir le login
+        - { path: ^/admin/documents, roles: ROLE_USER }    
+        - { path: ^/admin/dashboard, roles: ROLE_USER }          # NÉCESSITE d'être connecté pour accéder à cette URL

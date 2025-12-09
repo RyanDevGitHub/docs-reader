@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Uploader un nouveau document{% endblock %}
+
+{% block body %}
+<div class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- En-tête de la page -->
+    <header class="mb-8">
+        <h1 class="text-4xl font-extrabold text-white tracking-tight flex items-center">
+            <i data-lucide="upload-cloud" class="w-8 h-8 mr-3 text-primary"></i>
+            Uploader un nouveau document
+        </h1>
+        <p class="text-gray-400 mt-2">Veuillez remplir les informations et sélectionner les partenaires pour la diffusion.</p>
+    </header>
+
+    <!-- Formulaire d'Upload -->
+    {# Très important : utiliser l'attribut enctype pour l'upload de fichiers #}
+    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data', 'class': 'space-y-8'}}) }} 
+        
+        <!-- Champ Titre (form_row est stylisé via l'extension de Twig ou utilise des wrappers manuels) -->
+        {# Ici, on assume que form_row est adapté. Si ce n'est pas le cas, on doit le styliser manuellement. #}
+        {# Pour l'exemple, on stylise form_row manuellement pour garantir le design. #}
+        
+        {# Champ Titre #}
+        <div class="space-y-2">
+            {{ form_label(form.title, 'Titre du Document', {'label_attr': {'class': 'block text-sm font-medium text-gray-300'}}) }}
+            {{ form_widget(form.title, {'attr': {
+                'class': 'w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition duration-150',
+                'placeholder': 'Ex: Procédure de sécurité V3.0'
+            }}) }}
+            {{ form_errors(form.title) }}
+        </div>
+
+        <!-- Champ Upload de Fichier (documentFile) -->
+        <div class="space-y-2">
+            {{ form_label(form.documentFile, 'Fichier à Uploader (PDF, DOCX, etc.)', {'label_attr': {'class': 'block text-sm font-medium text-gray-300'}}) }}
+            <div class="flex items-center justify-center w-full">
+                <label for="{{ form.documentFile.vars.id }}" class="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-600 border-dashed rounded-xl cursor-pointer bg-gray-800 hover:bg-gray-700 transition duration-150">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                        <i data-lucide="file-up" class="w-10 h-10 mb-3 text-gray-400"></i>
+                        <p class="mb-2 text-sm text-gray-400"><span id="file-upload-text" class="font-semibold text-white">Cliquez pour uploader</span> ou glissez-déposez</p>
+                        <p class="text-xs text-gray-500">Taille max: 50MB</p>
+                    </div>
+                    {# Le champ input file est caché, on utilise le label pour l'action #}
+                    {{ form_widget(form.documentFile, {'attr': {'class': 'hidden', 'id': form.documentFile.vars.id }}) }}
+                </label>
+            </div>
+            {{ form_errors(form.documentFile) }}
+        </div>
+
+        <!-- Section de Sélection des Destinataires (form.partners) -->
+        <div class="bg-card-bg p-6 rounded-2xl shadow-xl border border-gray-700/50">
+            <h4 class="text-xl font-semibold text-white flex items-center mb-4">
+                <i data-lucide="users" class="w-5 h-5 mr-2 text-primary"></i>
+                Sélectionnez les destinataires (Partenaires)
+            </h4>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {# form_widget(form.partners) génère généralement un bloc de checkboxes ou select.
+                   Pour styliser chaque option (checkbox), on boucle sur les enfants du champ. #}
+                {% for partner in form.partners %}
+                    <label class="flex items-center space-x-3 bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition duration-150 cursor-pointer border border-gray-700">
+                        {{ form_widget(partner, {'attr': {
+                            'class': 'h-5 w-5 text-primary bg-gray-700 border-gray-500 rounded focus:ring-primary-dark'
+                        }}) }}
+                        <span class="text-white font-medium">{{ partner.vars.label }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+            {{ form_errors(form.partners) }}
+        </div>
+
+        <!-- Boutons d'Action -->
+        <div class="flex justify-end space-x-4 pt-4">
+            <a href="{{ path('admin_document_index') }}" class="inline-flex items-center px-6 py-3 border border-gray-600 text-sm font-medium rounded-xl text-gray-300 bg-gray-700 hover:bg-gray-600 transition duration-150 shadow-md">
+                <i data-lucide="x" class="w-5 h-5 mr-2"></i>
+                Annuler
+            </a>
+            <button class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-lg text-white bg-primary hover:bg-primary-dark transition duration-200 transform hover:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-body-bg" type="submit">
+                <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
+                Uploader et Notifier
+            </button>
+        </div>
+        
+    {{ form_end(form) }}
+</div>
+{% block javascripts %}
+{{ parent() }}
+<script>
+(() => {
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
+    const fileInput = document.getElementById('{{ form.documentFile.vars.id }}');
+    const fileUploadText = document.getElementById('file-upload-text');
+
+    if (!fileInput || !fileUploadText) {
+        return;
+    }
+
+    fileInput.addEventListener('change', function () {
+        fileUploadText.textContent = this.files.length
+            ? this.files[0].name
+            : 'Cliquez pour uploader';
+    });
+})();
+</script>
+{% endblock %}
+
+
+
+{% endblock %}

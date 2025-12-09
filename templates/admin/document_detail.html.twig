@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Suivi : {{ document.title }} | Admin{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-gray-50 min-h-screen">
+        
+        <!-- En-tête de Page -->
+        <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h1 class="text-3xl font-extrabold text-gray-900 leading-tight">
+                    Suivi du Document : 
+                    <span class="text-indigo-600">"{{ document.title }}"</span> 
+                </h1>
+                <p class="mt-1 text-sm text-gray-500">
+                    Uploadé le : {{ document.createdAt|date('Y-m-d H:i') }}
+                </p>
+            </div>
+            
+            <!-- Bouton de Retour à la liste -->
+            <a href="{{ path('admin_document_index') }}" class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-full shadow-sm text-gray-700 bg-white hover:bg-gray-50 transition duration-150">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Retour à la liste
+            </a>
+        </div>
+
+        <!-- Section du Tableau (Responsive) -->
+        <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Partenaire
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Statut
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Heure de Lecture
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Relances Envoyées
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Lien Unique
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for delivery in deliveries %}
+                            {% set isRead = delivery.readAt is not null %}
+                            {% set hoverClass = isRead ? 'hover:bg-green-50/50' : 'hover:bg-red-50/50' %}
+                            <tr class="{{ hoverClass }}">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {{ delivery.partner.name }} (<span class="text-gray-500">{{ delivery.partner.email }}</span>)
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {% if isRead %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Lu
+                                        </span>
+                                    {% else %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            Non Lu
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ delivery.readAt ? delivery.readAt|date('Y-m-d H:i') : 'En attente' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-gray-900">
+                                    {{ delivery.relanceCount }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                    {# NOTE: Assurez-vous que l'URL 'http://localhost:8000/read/' est correcte pour votre environnement #}
+                                    <a href="{{ 'http://localhost:8000/read/' ~ delivery.token }}" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-semibold">
+                                        Voir
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                    Aucune distribution enregistrée pour ce document.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Fin du Tableau -->
+
+    </div>
+{% endblock %}

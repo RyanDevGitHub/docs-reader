@@ -1,0 +1,146 @@
+{# templates/document/show.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Suivi : {{ document.title }}{% endblock %}
+
+{% block body %}
+    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        {# EN-TÊTE ET INFORMATIONS DU DOCUMENT #}
+        <header class="mb-8 border-b border-gray-700 pb-4">
+            <h1 class="text-3xl font-bold text-white tracking-tight mb-2">
+                Suivi du Document : <span class="text-primary">{{ document.title }}</span>
+            </h1>
+            <p class="text-gray-400">
+                Fichier : **{{ document.filename }}** | Créé le : {{ document.createdAt|date('d/m/Y à H:i') }}
+            </p>
+            
+            <div class="mt-4">
+                 <a href="{{ path('admin_document_index') }}" class="inline-flex items-center px-4 py-2 border border-gray-600 text-sm font-medium rounded-xl shadow-lg text-gray-300 bg-gray-700/50 hover:bg-gray-700 transition duration-200">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+                    Retour au Catalogue
+                </a>
+                
+                {# Optionnel : Lien pour télécharger le document original #}
+                <a href="{{ asset('uploads/documents/' ~ document.filename) }}" target="_blank" class="inline-flex items-center px-4 py-2 border border-gray-600 text-sm font-medium rounded-xl shadow-lg text-gray-300 bg-gray-700/50 hover:bg-gray-700 transition duration-200 ml-3">
+                    <i data-lucide="download" class="w-4 h-4 mr-2"></i>
+                    Voir/Télécharger le Fichier
+                </a>
+            </div>
+        </header>
+
+         <div class="pdf-container bg-white border border-gray-300 rounded-lg shadow-xl overflow-hidden mb-6">
+          <iframe 
+    src="{{ asset('uploads/documents/' ~ document.filename) }}"
+    class="w-full h-[80vh]"
+    style="border: none;"
+    title="Document PDF">
+</iframe>
+        </div>
+
+        {# SECTION SUIVI DES LIVRAISONS #}
+        <h2 class="text-2xl font-semibold text-white mb-4 mt-8">
+            Statut des Livraisons aux Partenaires ({{ deliveries|length }})
+        </h2>
+
+        <div class="bg-card-bg shadow-2xl overflow-hidden rounded-xl border border-gray-700/50">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-700">
+                    <thead class="bg-gray-800/70">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Partenaire
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Statut
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Lu le
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Relances
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Envoyé le
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700">
+                        {% for delivery in deliveries %}
+                            <tr class="bg-card-bg hover:bg-gray-800/50 transition duration-150 ease-in-out">
+                                
+                                {# Partenaire #}
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                                    {{ delivery.partner.name }} 
+                                    <span class="text-xs text-gray-500 block">{{ delivery.partner.email }}</span>
+                                </td>
+                                
+                                {# Statut de Lecture #}
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    {% if delivery.readAt %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-800 text-green-200">
+                                            ✅ Lu
+                                        </span>
+                                    {% else %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-800 text-yellow-200">
+                                            ⏳ Non Lu
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                
+                                {# Date de Lecture #}
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                                    {{ delivery.readAt ? delivery.readAt|date('d/m/Y H:i') : 'En attente' }}
+                                </td>
+                                
+                                {# Compteur de Relances #}
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                                    {{ delivery.relanceCount }}
+                                </td>
+                                
+                                {# Date d'Envoi #}
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                                    {{ delivery.sentAt|date('d/m/Y H:i') }}
+                                </td>
+
+                                {# ACTION ADMINISTRATEUR : MARQUER COMME LU #}
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    {% if not delivery.readAt %}
+                                        {# Bouton d'action pour marquer manuellement la lecture #}
+                                        <form action="{{ path('admin_mark_as_read', {'deliveryId': delivery.id}) }}" method="post" 
+                                            onsubmit="return confirm('Confirmer que vous souhaitez marquer cette livraison comme LUE pour {{ delivery.partner.name }} ?');">
+                                            
+                                            <button type="submit" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-primary hover:bg-primary-dark transition duration-150 shadow-md">
+                                                Marquer Lu Manuellement
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="p-8 text-center text-gray-400">
+                                    <i data-lucide="inbox" class="w-10 h-10 mx-auto mb-3 text-gray-500"></i>
+                                    <p>Ce document n'a été envoyé à aucun partenaire pour le moment.</p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {# Nécessaire pour initialiser les icônes Lucide #}
+    <script>
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    </script>
+{% endblock %}
