@@ -1,4 +1,5 @@
-name: CD - Docs Outils
+
+name: CD - Docs Reader
 
 on:
   push:
@@ -8,7 +9,7 @@ jobs:
   docker-build-push:
     runs-on: ubuntu-latest
     env:
-      IMAGE_TAG: ghcr.io/${{ github.repository }}/docs-outils:latest
+      IMAGE_TAG: ghcr.io/ryandevgithub/docs-reader:latest
     permissions:
       contents: read
       packages: write
@@ -53,10 +54,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            cd /var/www/apps/docs-outils
+            cd /var/www/apps/docs-reader
             # Pull la dernière image PHP-FPM depuis GHCR
             docker-compose pull php_fpm
             # Recrée le conteneur PHP-FPM avec le fichier env déjà présent
-            docker-compose --env-file doc_outils.env up -d
-            # Optionnel : nettoyage des images obsolètes
+            docker-compose --env-file doc_reader.env up -d
+            # Nettoyage des images obsolètes
             docker image prune -f
