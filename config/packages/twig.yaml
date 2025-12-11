@@ -3,6 +3,8 @@ twig:
     cache: '%kernel.cache_dir%/twig'
     debug: true
     strict_variables: false
+    globals:
+        default_uri: '%app.default_uri%'
 
 when@test:
     twig:

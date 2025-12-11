@@ -73,10 +73,11 @@
                                     {{ delivery.relanceCount }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                    {# NOTE: Assurez-vous que l'URL 'http://localhost:8000/read/' est correcte pour votre environnement #}
-                                    <a href="{{ 'http://localhost:8000/read/' ~ delivery.token }}" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-semibold">
-                                        Voir
-                                    </a>
+                                  {% set base_url = default_uri %}
+                                        <a href="{{ base_url ~ '/read/' ~ delivery.token }}" 
+                                        target="_blank" 
+                                        class="text-indigo-600 hover:text-indigo-800 font-semibold">Voir
+                                        </a>
                                 </td>
                             </tr>
                         {% else %}
