@@ -39,6 +39,17 @@ security:
 
                 username_parameter: email   # <-- Indique au firewall que l'identifiant est dans le champ 'email'
                 password_parameter: password # <-- Indique au firewall que le mot de passe est dans le champ 'password' 
+
+            remember_me:
+                # Clé secrète utilisée pour chiffrer les cookies (utilisez la même que kernel.secret)
+                secret: '%kernel.secret%' 
+                
+                # Le nom du champ de formulaire à cocher ("Se souvenir de moi")
+                # Assurez-vous que ce nom corresponde à l'input de votre formulaire
+                name: _remember_me 
+                
+                # La durée de validité du cookie (par exemple, 30 jours)
+                lifetime: 2592000 # 30 jours en secondes (30 * 24 * 3600)
                 
             # Déconnexion
             logout:

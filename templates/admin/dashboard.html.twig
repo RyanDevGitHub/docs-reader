@@ -23,7 +23,7 @@ Suivi des Documents
     <!-- Bouton d'action principal -->
     <div class="mb-8 flex justify-end">
        {# Idéalement, à envelopper d'une vérification d'accès: {% if is_granted('ROLE_ADMIN') %} #}
-        <a href="{{ path('app_document') }}" class="inline-flex items-center px-4 py-2 border border-gray-600 text-sm font-medium rounded-xl shadow-lg text-gray-300 bg-gray-700/50 hover:bg-gray-700 transition duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-body-bg justify-center">
+        <a href="{{ path('admin_document_index') }}" class="inline-flex items-center px-4 py-2 border border-gray-600 text-sm font-medium rounded-xl shadow-lg text-gray-300 bg-gray-700/50 hover:bg-gray-700 transition duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-body-bg justify-center">
             <i data-lucide="bar-chart-3" class="w-4 h-4 mr-2"></i>
             Catalogue des Documents
         </a>

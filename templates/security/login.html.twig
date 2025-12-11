@@ -26,34 +26,54 @@ Il utilise le thème sombre configuré dans base.html.twig (bg-body-bg).
         {% endif %}
 
         <form method="post" action="{{ path('app_login') }}">
-            <div class="space-y-6">
-                <!-- Champ Email -->
-                <div>
-                    <label for="inputEmail" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" required autofocus 
-                           class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition duration-150"
-                           placeholder="votre.email@domaine.com">
-                </div>
-                
-                <!-- Champ Mot de passe -->
-                <div>
-                    <label for="inputPassword" class="block text-sm font-medium text-gray-300 mb-1">Mot de passe</label>
-                    <input type="password" name="password" id="inputPassword" required
-                           class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition duration-150"
-                           placeholder="********">
-                </div>
+    <div class="space-y-6">
+        
+        <div>
+            <label for="inputEmail" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+            <input type="email" 
+                   value="{{ last_username }}" 
+                   name="email" 
+                   id="inputEmail" 
+                   required autofocus 
+                   class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition duration-150"
+                   placeholder="votre.email@domaine.com">
+        </div>
+        
+        <div>
+            <label for="inputPassword" class="block text-sm font-medium text-gray-300 mb-1">Mot de passe</label>
+            <input type="password" 
+                   name="password" 
+                   id="inputPassword" 
+                   required
+                   class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition duration-150"
+                   placeholder="********">
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+            <div class="flex items-center">
+                <input type="checkbox" 
+                       id="remember_me" 
+                       name="_remember_me" 
+                       class="h-4 w-4 text-primary rounded border-gray-600 focus:ring-primary bg-gray-700 cursor-pointer">
+                <label for="remember_me" class="ml-2 block text-sm text-gray-400 cursor-pointer">
+                    Se souvenir de moi
+                </label>
             </div>
+            
+            {# Vous pourriez ajouter ici un lien "Mot de passe oublié ?" si nécessaire #}
+        </div>
+        
+    </div>
 
-            <!-- Jeton de sécurité CSRF : indispensable pour Symfony Security -->
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-            <!-- Bouton de Connexion -->
-            <button type="submit" 
-                    class="w-full mt-8 py-3 px-4 bg-primary text-white font-semibold rounded-xl shadow-lg shadow-primary/30 hover:bg-primary-dark transition duration-200 transform hover:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-card-bg flex items-center justify-center">
-                <i data-lucide="log-in" class="w-5 h-5 mr-2"></i>
-                Connexion
-            </button>
-        </form>
+    <button type="submit" 
+            class="w-full mt-8 py-3 px-4 bg-primary text-white font-semibold rounded-xl shadow-lg shadow-primary/30 hover:bg-primary-dark transition duration-200 transform hover:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-card-bg flex items-center justify-center">
+        <i data-lucide="log-in" class="w-5 h-5 mr-2"></i>
+        Connexion
+    </button>
+</form>
+        
         
         <div class="mt-6 text-center text-sm">
             {# Lien simulé pour la récupération du mot de passe #}

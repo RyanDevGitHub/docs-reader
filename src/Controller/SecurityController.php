@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -28,8 +29,23 @@ class SecurityController extends AbstractController
         ]);
     }
     #[Route(path: '/', name: 'home')]
-    public function home(AuthenticationUtils $authenticationUtils): Response
+    public function home(AuthenticationUtils $authenticationUtils, Security $security): Response
     {
+        // ----------------------------------------------------
+        // NOUVEAU : Logique de Redirection pour Utilisateur Connecté
+        // ----------------------------------------------------
+
+        // La méthode isGranted('ROLE_USER') renvoie true si l'utilisateur est connecté (session ou cookie Remember Me)
+        if ($security->isGranted('ROLE_USER')) {
+            // Redirigez l'utilisateur vers la page principale
+            return $this->redirectToRoute('admin_document_index');
+        }
+
+        // ----------------------------------------------------
+        // ANCIEN : Logique d'affichage du Formulaire de Connexion
+        // (Seulement si l'utilisateur N'EST PAS connecté)
+        // ----------------------------------------------------
+
         $error = $authenticationUtils->getLastAuthenticationError();
         // Récupère le dernier email entré
         $lastUsername = $authenticationUtils->getLastUsername();
