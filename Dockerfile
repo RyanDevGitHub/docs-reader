@@ -28,7 +28,8 @@ WORKDIR /var/www/html
 COPY . .
 
 # Installer dépendances PHP avec Composer
-RUN composer install --no-interaction --prefer-dist --no-scripts
+# On utilise -1 pour dire à PHP de ne pas limiter la RAM pour Composer
+RUN COMPOSER_MEMORY_LIMIT=-1 composer install --no-interaction --prefer-dist --no-scripts
 
 # Droits pour Symfony
 RUN mkdir -p var && chown -R www-data:www-data var
