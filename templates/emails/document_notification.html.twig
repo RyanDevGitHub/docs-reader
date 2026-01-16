@@ -3,103 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nouveau Document : {{ document.title }}</title>
-    
-    <!-- Media Queries pour la Responsivité Mobile -->
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
+    <title>Nouveau Document : {{ documentTitle }}</title>
     <style>
-        /* Force la couleur de fond si les images sont désactivées */
-        body {
-            background-color: #f3f4f6 !important;
+        /* Styles spécifiques pour le Dark Mode des clients mail récents */
+        :root {
+            color-scheme: light dark;
+            supported-color-schemes: light dark;
         }
-
-        /* Masque la table wrapper sur mobile et force la largeur à 100% */
+        @media (prefers-color-scheme: dark) {
+            .body-bg { background-color: #0f172a !important; }
+            .card-bg { background-color: #1e293b !important; }
+            .text-main { color: #f1f5f9 !important; }
+            .text-muted { color: #94a3b8 !important; }
+            .title-color { color: #ffffff !important; }
+        }
+        /* Mobile fixes */
         @media screen and (max-width: 620px) {
-            .container-table {
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-            .main-content-td {
-                padding: 20px !important; /* Réduit le padding sur mobile */
-            }
-            .cta-button {
-                width: 100% !important;
-                display: block !important;
-                padding-left: 0 !important;
-                padding-right: 0 !important;
-            }
+            .container-table { width: 100% !important; }
+            .cta-button { width: 100% !important; display: block !important; box-sizing: border-box; }
         }
     </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Inter', Arial, sans-serif;">
+<body class="body-bg" style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
 
-    <!-- Conteneur central de l'email (pour la compatibilité) -->
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
         <tr>
-            <td align="center" style="padding: 24px;">
-                <!-- Table principale, cible de la Media Query -->
-                <table class="container-table" role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width: 600px; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);">
+            <td align="center" style="padding: 20px 10px;">
+                <table class="container-table card-bg" role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
                     
-                    <!-- En-tête (Bande de couleur Indigo) -->
                     <tr>
-                        <td height="8" style="background-color: #4F46E5; border-radius: 12px 12px 0 0;"></td>
+                        <td height="6" style="background-color: #4F46E5;"></td>
                     </tr>
                     
-                    <!-- Corps du contenu -->
                     <tr>
-                        <td class="main-content-td" style="padding: 32px 40px 40px 40px;">
-
-                            <!-- Titre/Statut de notification -->
-                            <h1 style="font-size: 24px; font-weight: 700; color: #1F2937; margin: 0 0 16px 0;">
-                                ✨ Nouveau Document Disponible
+                        <td style="padding: 40px 30px;">
+                            <h1 class="title-color" style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0 0 20px 0; text-align: left;">
+                                ✨ Nouveau document disponible
                             </h1>
 
-                            <!-- Message d'introduction -->
-                            <p style="font-size: 16px; color: #374151; line-height: 1.5; margin: 0 0 16px 0;">
-                                Bonjour {{ partnerName }},
+                            <p class="text-main" style="font-size: 16px; color: #334155; line-height: 1.6; margin: 0 0 10px 0;">
+                                Bonjour <strong>{{ partnerName }}</strong>,
                             </p>
                             
-                            <p style="font-size: 16px; color: #374151; line-height: 1.5; margin: 0 0 24px 0;">
-                                Un nouveau document est disponible pour consultation et validation de lecture :
+                            <p class="text-main" style="font-size: 16px; color: #334155; line-height: 1.6; margin: 0 0 25px 0;">
+                                Une nouvelle ressource vient d'être partagée avec vous. Merci d'en prendre connaissance et de confirmer votre lecture.
                             </p>
 
-                            <!-- Titre du Document (Mise en évidence) -->
-                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 24px;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 30px;">
                                 <tr>
-                                    <td style="padding: 16px; background-color: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 8px; text-align: center;">
-                                        <strong style="font-size: 18px; color: #4F46E5;">{{ documentTitle }}</strong>
+                                    <td style="padding: 20px; background-color: #f1f5f9; border-radius: 12px; border-left: 4px solid #4F46E5;">
+                                        <div class="text-muted" style="font-size: 12px; font-weight: bold; color: #64748b; text-transform: uppercase; margin-bottom: 4px;">Titre du document</div>
+                                        <div class="title-color" style="font-size: 18px; font-weight: 700; color: #4F46E5;">{{ documentTitle }}</div>
                                     </td>
                                 </tr>
                             </table>
 
-                            <!-- Bouton/CTA -->
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                                 <tr>
-                                    <td align="center" style="padding-bottom: 24px;">
-                                        <a href="{{ readUrl }}" target="_blank" class="cta-button" style="display: inline-block; padding: 12px 24px; font-size: 16px; font-weight: 700; color: #ffffff; background-color: #4F46E5; border-radius: 25px; text-decoration: none; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);">
-                                            Consulter et Valider ma Lecture
+                                    <td align="center" style="padding: 10px 0 30px 0;">
+                                        <a href="{{ readUrl }}" target="_blank" class="cta-button" style="display: inline-block; padding: 16px 32px; font-size: 16px; font-weight: bold; color: #ffffff; background-color: #4F46E5; border-radius: 12px; text-decoration: none; text-align: center;">
+                                            Consulter et Valider
                                         </a>
                                     </td>
                                 </tr>
                             </table>
-                            
-                            <!-- Lien simple (texte) pour les clients qui désactivent les boutons -->
-                            <p style="font-size: 14px; color: #6B7280; text-align: center; margin: 0 0 16px 0; word-break: break-all;">
-                                <a href="{{ readUrl }}" target="_blank" style="color: #4F46E5; text-decoration: underline;">
-                                    Lien sécurisé : {{ readUrl }}
-                                </a>
-                            </p>
 
-                            <!-- Message de clôture -->
-                            <p style="font-size: 16px; color: #374151; line-height: 1.5; margin: 0;">
-                                Merci de votre collaboration.
-                            </p>
+                            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 0 0 25px 0;">
 
+                            <p class="text-muted" style="font-size: 13px; color: #94a3b8; line-height: 1.4; text-align: center; margin: 0;">
+                                Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br>
+                                <a href="{{ readUrl }}" style="color: #4F46E5; text-decoration: none; word-break: break-all;">{{ readUrl }}</a>
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="padding: 0 30px 30px 30px; text-align: center;">
+                            <p style="font-size: 12px; color: #94a3b8; margin: 0;">
+                                &copy; 2026 Votre Plateforme Documentaire. Tous droits réservés.
+                            </p>
                         </td>
                     </tr>
                 </table>
             </td>
         </tr>
     </table>
-
 </body>
 </html>

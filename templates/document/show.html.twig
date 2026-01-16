@@ -1,146 +1,146 @@
-{# templates/document/show.html.twig #}
-
 {% extends 'base.html.twig' %}
 
 {% block title %}Suivi : {{ document.title }}{% endblock %}
 
 {% block body %}
-    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        
-        {# EN-TÊTE ET INFORMATIONS DU DOCUMENT #}
-        <header class="mb-8 border-b border-gray-700 pb-4">
-            <h1 class="text-3xl font-bold text-white tracking-tight mb-2">
-                Suivi du Document : <span class="text-primary">{{ document.title }}</span>
+<div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+    
+    {# EN-TÊTE DU DOCUMENT #}
+    <header class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="flex-1">
+            <div class="flex items-center gap-2 text-primary mb-2 text-sm font-bold uppercase tracking-wider">
+                <i data-lucide="info" class="w-4 h-4"></i>
+                Détails du document
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                {{ document.title }}
             </h1>
-            <p class="text-gray-400">
-                Fichier : **{{ document.filename }}** | Créé le : {{ document.createdAt|date('d/m/Y à H:i') }}
-            </p>
-            
-            <div class="mt-4">
-                 <a href="{{ path('admin_document_index') }}" class="inline-flex items-center px-4 py-2 border border-gray-600 text-sm font-medium rounded-xl shadow-lg text-gray-300 bg-gray-700/50 hover:bg-gray-700 transition duration-200">
-                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
-                    Retour au Catalogue
-                </a>
-                
-                {# Optionnel : Lien pour télécharger le document original #}
-                <a href="{{ asset('uploads/documents/' ~ document.filename) }}" target="_blank" class="inline-flex items-center px-4 py-2 border border-gray-600 text-sm font-medium rounded-xl shadow-lg text-gray-300 bg-gray-700/50 hover:bg-gray-700 transition duration-200 ml-3">
-                    <i data-lucide="download" class="w-4 h-4 mr-2"></i>
-                    Voir/Télécharger le Fichier
-                </a>
+            <div class="mt-2 flex flex-wrap gap-4 text-slate-500 dark:text-slate-400 text-sm">
+                <span class="flex items-center"><i data-lucide="file-text" class="w-4 h-4 mr-1.5"></i> {{ document.filename }}</span>
+                <span class="flex items-center"><i data-lucide="calendar" class="w-4 h-4 mr-1.5"></i> {{ document.createdAt|date('d/m/Y') }}</span>
             </div>
-        </header>
-
-         <div class="pdf-container bg-white border border-gray-300 rounded-lg shadow-xl overflow-hidden mb-6">
-          <iframe 
-    src="{{ asset('uploads/documents/' ~ document.filename) }}"
-    class="w-full h-[80vh]"
-    style="border: none;"
-    title="Document PDF">
-</iframe>
         </div>
+        
+        <div class="flex flex-wrap gap-3">
+            <a href="{{ path('admin_document_index') }}" class="inline-flex items-center px-4 py-2 text-sm font-bold rounded-xl text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition duration-200 shadow-sm">
+                <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+                Catalogue
+            </a>
+            <a href="{{ asset('uploads/documents/' ~ document.filename) }}" target="_blank" class="inline-flex items-center px-4 py-2 text-sm font-bold rounded-xl text-white bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 transition duration-200 shadow-lg">
+                <i data-lucide="download" class="w-4 h-4 mr-2"></i>
+                Télécharger
+            </a>
+        </div>
+    </header>
 
-        {# SECTION SUIVI DES LIVRAISONS #}
-        <h2 class="text-2xl font-semibold text-white mb-4 mt-8">
-            Statut des Livraisons aux Partenaires ({{ deliveries|length }})
-        </h2>
-
-        <div class="bg-card-bg shadow-2xl overflow-hidden rounded-xl border border-gray-700/50">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-700">
-                    <thead class="bg-gray-800/70">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                Partenaire
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                Statut
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                Lu le
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                Relances
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                Envoyé le
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                Action
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-700">
-                        {% for delivery in deliveries %}
-                            <tr class="bg-card-bg hover:bg-gray-800/50 transition duration-150 ease-in-out">
-                                
-                                {# Partenaire #}
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                                    {{ delivery.partner.name }} 
-                                    <span class="text-xs text-gray-500 block">{{ delivery.partner.email }}</span>
-                                </td>
-                                
-                                {# Statut de Lecture #}
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    {% if delivery.readAt %}
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-800 text-green-200">
-                                            ✅ Lu
-                                        </span>
-                                    {% else %}
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-800 text-yellow-200">
-                                            ⏳ Non Lu
-                                        </span>
-                                    {% endif %}
-                                </td>
-                                
-                                {# Date de Lecture #}
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                                    {{ delivery.readAt ? delivery.readAt|date('d/m/Y H:i') : 'En attente' }}
-                                </td>
-                                
-                                {# Compteur de Relances #}
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                                    {{ delivery.relanceCount }}
-                                </td>
-                                
-                                {# Date d'Envoi #}
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                                    {{ delivery.sentAt|date('d/m/Y H:i') }}
-                                </td>
-
-                                {# ACTION ADMINISTRATEUR : MARQUER COMME LU #}
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    {% if not delivery.readAt %}
-                                        {# Bouton d'action pour marquer manuellement la lecture #}
-                                        <form action="{{ path('admin_mark_as_read', {'deliveryId': delivery.id}) }}" method="post" 
-                                            onsubmit="return confirm('Confirmer que vous souhaitez marquer cette livraison comme LUE pour {{ delivery.partner.name }} ?');">
-                                            
-                                            <button type="submit" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-primary hover:bg-primary-dark transition duration-150 shadow-md">
-                                                Marquer Lu Manuellement
-                                            </button>
-                                        </form>
-                                    {% else %}
-                                        —
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="6" class="p-8 text-center text-gray-400">
-                                    <i data-lucide="inbox" class="w-10 h-10 mx-auto mb-3 text-gray-500"></i>
-                                    <p>Ce document n'a été envoyé à aucun partenaire pour le moment.</p>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+    {# APERÇU DU DOCUMENT (Optionnel pour l'admin) #}
+    <div class="mb-10 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
+        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+            <span class="text-xs font-bold text-slate-500 uppercase">Aperçu du fichier</span>
+            <span class="text-xs text-slate-400">PDF Viewer</span>
+        </div>
+        <div class="relative w-full bg-slate-100 dark:bg-slate-950" style="height: 50vh; min-height: 400px;">
+            <iframe 
+                src="{{ asset('uploads/documents/' ~ document.filename) }}"
+                class="w-full h-full border-none"
+                title="Aperçu du document">
+            </iframe>
         </div>
     </div>
 
-    {# Nécessaire pour initialiser les icônes Lucide #}
-    <script>
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
-    </script>
+    {# SECTION SUIVI DES LIVRAISONS #}
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center">
+            <i data-lucide="users" class="w-6 h-6 mr-3 text-primary"></i>
+            Statut des envois
+            <span class="ml-3 px-2.5 py-0.5 text-sm bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full font-bold">
+                {{ deliveries|length }}
+            </span>
+        </h2>
+    </div>
+
+    <div class="bg-white dark:bg-slate-900 shadow-xl rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
+                <thead class="bg-slate-50 dark:bg-slate-800/50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Partenaire</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Statut</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden md:table-cell">Relances</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden sm:table-cell">Envoyé le</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                    {% for delivery in deliveries %}
+                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                            {# Partenaire #}
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-bold text-slate-900 dark:text-white">{{ delivery.partner.name }}</span>
+                                    <span class="text-xs text-slate-500 dark:text-slate-500">{{ delivery.partner.email }}</span>
+                                </div>
+                            </td>
+                            
+                            {# Statut #}
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if delivery.readAt %}
+                                    <div class="flex flex-col">
+                                        <span class="inline-flex items-center text-xs font-bold text-green-600 dark:text-green-400">
+                                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 mr-1.5"></i> Lu
+                                        </span>
+                                        <span class="text-[10px] text-slate-400 mt-0.5">{{ delivery.readAt|date('d/m/Y H:i') }}</span>
+                                    </div>
+                                {% else %}
+                                    <span class="inline-flex items-center text-xs font-bold text-amber-600 dark:text-amber-500">
+                                        <i data-lucide="clock" class="w-3.5 h-3.5 mr-1.5"></i> En attente
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            {# Relances #}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 hidden md:table-cell">
+                                <span class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-xs font-mono">
+                                    {{ delivery.relanceCount }}
+                                </span>
+                            </td>
+                            
+                            {# Envoyé le #}
+                            <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-500 dark:text-slate-400 hidden sm:table-cell">
+                                {{ delivery.sentAt|date('d/m/Y') }}
+                            </td>
+
+                            {# Action #}
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                {% if not delivery.readAt %}
+                                    <form action="{{ path('admin_mark_as_read', {'deliveryId': delivery.id}) }}" method="post" 
+                                          onsubmit="return confirm('Confirmer la lecture manuelle pour {{ delivery.partner.name }} ?');">
+                                        <button type="submit" class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors title='Marquer comme lu'">
+                                            <i data-lucide="user-check" class="w-5 h-5"></i>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-slate-300 dark:text-slate-700">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="p-10 text-center text-slate-500">
+                                <i data-lucide="send" class="w-8 h-8 mx-auto mb-3 opacity-20"></i>
+                                Aucun envoi enregistré.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+    });
+</script>
 {% endblock %}
